@@ -50,15 +50,15 @@ jobs:
     needs:  build
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@main
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v1
+      uses: actions/create-release@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.run_number }}
-        release_name: Release from ${{ github.run_number }}
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
         body: New release for ${{ github.sha }}. Release notes can be found on the docs
         draft:  false
         prerelease: false
@@ -69,14 +69,7 @@ jobs:
     - name: Upload release asset
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.github_token }}
-        ref: ${{ github.event.push.ref }}
-        run: |
-          tag=${ref##*/}
-          gh release create "$tag" \
-              --repo="$GITHUB_REPOSITORY" \
-              --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
-              --generate-notes
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} 
         asset_path: ./${{ github.sha }}.zip
