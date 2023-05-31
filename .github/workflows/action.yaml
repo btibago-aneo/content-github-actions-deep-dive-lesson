@@ -49,14 +49,16 @@ jobs:
     runs-on:  ubuntu-latest
     needs:  build
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release from ${{ github.ref }}
+        tag_name: ${{ github.run_number }}
+        release_name: Release from ${{ github.run_number }}
         body: New release for ${{ github.sha }}. Release notes can be found on the docs
         draft:  false
         prerelease: false
@@ -68,6 +70,13 @@ jobs:
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.github_token }}
+        ref: ${{ github.event.push.ref }}
+        run: |
+          tag=${ref##*/}
+          gh release create "$tag" \
+              --repo="$GITHUB_REPOSITORY" \
+              --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
+              --generate-notes
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} 
         asset_path: ./${{ github.sha }}.zip
