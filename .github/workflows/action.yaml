@@ -49,14 +49,14 @@ jobs:
     runs-on:  ubuntu-latest
     needs:  build
     steps:
-    - name: Create release
+    - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.github_token }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.run_number }}
-        release_name: Release from ${{ github.run_number }}
+        tag_name: ${{ github.ref }}
+        release_name: Release from ${{ github.ref }}
         body: New release for ${{ github.sha }}. Release notes can be found on the docs
         draft:  false
         prerelease: false
