@@ -94,6 +94,8 @@ jobs:
         
   test:
     runs-on: ubuntu-latest
+    env:
+      BUCKET_NAME: my-uniquebucket0001
     needs:  upload
     steps:
       - name: Install AWS CLI
@@ -108,13 +110,10 @@ jobs:
           aws-region: us-east-1
       - name: Create test function  
         run: |  
-            aws lambda create-function \
-            --function-name test-function \
+            aws lambda create-function --function-name test-function \
+            --code S3Bucket=${{ env.BUCKET_NAME }},S3Key=${{ github.sha }}.zip \ 
             --role arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/my-lambda-role \
-            --s3-bucket my-uniquebucket0001 \
-            --s3-key ${{ github.sha }}.zip \  
-            --handler lambda_function.lambda_handler \
-            --runtime python3.9
+            --handler lambda_function.lambda_handler --runtime python3.9
             
       - name: Wait 30 seconds
         run:  sleep 30
