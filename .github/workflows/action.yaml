@@ -90,12 +90,12 @@ jobs:
           aws-secret-access-key:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - name: Upload to S3
-        run:  aws s3 cp ${{ github.sha }}.zip s3://my-uniquebucket0001/${{ github.sha }}.zip
+        run:  aws s3 cp ${{ github.sha }}.zip s3://my-uniquebucket00001/${{ github.sha }}.zip
         
   test:
     runs-on: ubuntu-latest
     env:
-      BUCKET_NAME: my-uniquebucket0001
+      BUCKET_NAME: my-uniquebucket00001
     needs:  upload
     strategy:
       matrix:
@@ -140,7 +140,7 @@ jobs:
         run:  |
             aws lambda update-function-code \
             --function-name my-function \
-            --s3-bucket my-uniquebucket0001 \
+            --s3-bucket my-uniquebucket00001 \
             --s3-key ${{ github.sha }}.zip \
             --publish
           
